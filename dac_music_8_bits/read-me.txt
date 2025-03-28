@@ -1,0 +1,33 @@
+Let's use the FFmpeg tool—remember to add it to the environment variables.
+
+With the following command, we convert the music to an 8-bit format with only one channel:
+
+ffmpeg -i evilm.mp3 -ac 1 -ar 8000 -f u8 evilm_8bit.wav
+We can play the music with the following command to test it:
+
+ffplay -f u8 -ar 8000 evilm_8bit.wav
+If everything works correctly, we proceed to the ESP32 using the DAC.
+
+If compression is needed:
+
+ffmpeg -i music.mp3 -ac 1 -ar 8000 -acodec pcm_u8 compressed.wav
+
+To play the compressed file:
+
+ffplay -f u8 -ar 8000 evilmc.wav
+
+Make sure to remove the channel setting; otherwise, it will fail.
+
+This code was developed to use the ESP32 and play an 8-bit mono WAV audio file with an 8 kHz sample rate through the DAC (Digital-to-Analog Converter). The code works as follows:
+
+First, it imports the necessary libraries:
+
+machine to interact with the microcontroller's hardware (such as GPIO pins, ADC, and DAC).
+
+time for time-related functions, like time.sleep(), which controls the playback timing.
+
+The ESP32’s GPIO25 pin is configured as the DAC output, allowing digital values to be converted into an analog voltage signal. The code then opens the WAV audio file in binary read mode and skips the first 44 bytes of the file header, as they contain metadata about the audio format that is not needed for playback.
+
+Inside an infinite loop, the code reads the WAV file byte by byte. Each byte is sent to the DAC, converting it into an analog signal. After sending a byte, the code introduces a short delay with time.sleep(0.0001) to maintain synchronization and ensure continuous playback at the correct speed.
+
+The code also includes an end-of-file control: when the audio file reaches the end, the loop stops, and playback is completed. This process works well for small audio files, but adjustments may be needed for larger or higher-quality files, such as increasing the sampling rate, using larger buffers, or optimizing the code to handle different file types and audio settings.
